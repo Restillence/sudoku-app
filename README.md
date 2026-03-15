@@ -1,6 +1,8 @@
-# Sudoku App
 
-A cross-platform Sudoku game built with React Native + Expo. Works on Web and Android.
+cat > /home/yvonne_otto702/.openclaw/workspace/sudoku-app/README.md << 'EOF'
+# 📱 Sudoku App
+
+Cross-platform Sudoku game - Web + Android
 
 ## Features
 
@@ -30,34 +32,30 @@ Opens at http://localhost:8081
 npm install -g eas-cli
 ```
 
-2. Login to Expo:
+2. Login to Expo
 ```bash
 eas login
 ```
 
-3. Build APK:
+3. Build APK
 ```bash
 eas build --platform android --profile preview
 ```
 
 4. Download APK from the Expo dashboard and install on your device.
 
-### Option 2: Local Build (Advanced)
+### Option 2: Local Build (advanced)
 
-1. Prebuild native project:
+1. Prebuild native project
 ```bash
 npx expo prebuild --platform android
-```
-
-2. Build debug APK:
-```bash
 cd android
-./gradlew assembleDebug
+./gradlew assembleRelease
 ```
 
-3. APK location: `android/app/build/outputs/apk/debug/app-debug.apk`
+3. APK location: `android/app/build/outputs/apk/release/app-release.apk`
 
-### Option 3: Export as PWA (No app store needed)
+### Option 3: PWA (No app store needed)
 
 ```bash
 npx expo export --platform web
@@ -66,12 +64,6 @@ npx expo export --platform web
 Host the `dist/` folder on any static hosting (Netlify, Vercel, GitHub Pages).
 
 Users can then "Install App" from browser on Android.
-
-## Install on Android Device
-
-1. Transfer APK to your phone via USB, cloud, or QR code
-2. Enable "Install from unknown sources" in Android Settings
-3. Open the APK file to install
 
 ## Tech Stack
 
