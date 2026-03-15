@@ -81,6 +81,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     backgroundColor: '#f1f5f9',
+    minWidth: 100,
+    alignItems: 'center',
   },
   actionButtonActive: {
     backgroundColor: '#3b82f6',

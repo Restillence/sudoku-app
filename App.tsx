@@ -245,6 +245,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#3b82f6',
     fontWeight: '600',
+    padding: 10,
   },
   statsRow: {
     flexDirection: 'row',
