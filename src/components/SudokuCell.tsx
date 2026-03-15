@@ -42,13 +42,14 @@ export function SudokuCell({ cell, row, col, isSelected, isHighlighted, onPress 
         },
       ]}
       onPress={() => onPress(row, col)}
+      pointerEvents="auto"
     >
       {cell.value !== 0 ? (
         <Text style={[styles.cellText, { color: textColor }]}>
           {cell.value}
         </Text>
       ) : cell.notes.length > 0 ? (
-        <View style={styles.notesContainer}>
+        <View style={styles.notesContainer} pointerEvents="none">
           {cell.notes.map((note) => (
             <Text key={note} style={styles.noteText}>
               {note}
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     borderColor: '#cbd5e1',
     borderTopWidth: 0.5,
     borderLeftWidth: 0.5,
-    cursor: 'pointer', // Fix for web
+    zIndex: 10,
   },
   cellText: {
     fontSize: 18,

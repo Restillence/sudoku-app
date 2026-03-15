@@ -12,22 +12,24 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} pointerEvents="box-none">
       <View style={styles.numbersRow}>
         {numbers.map((num) => (
           <Pressable
             key={num}
             style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]}
             onPress={() => onNumberPress(num)}
+            pointerEvents="auto"
           >
             <Text style={styles.numberText}>{num}</Text>
           </Pressable>
         ))}
       </View>
-      <View style={styles.actionsRow}>
+      <View style={styles.actionsRow} pointerEvents="box-none">
         <Pressable
           style={({ pressed }) => [styles.actionButton, isNotesMode && styles.actionButtonActive, pressed && styles.actionButtonPressed]}
           onPress={onToggleNotes}
+          pointerEvents="auto"
         >
           <Text style={[styles.actionText, isNotesMode && styles.actionTextActive]}>
             ✏️ Notes
@@ -36,6 +38,7 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
         <Pressable
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
           onPress={onErase}
+          pointerEvents="auto"
         >
           <Text style={styles.actionText}>🗑️ Erase</Text>
         </Pressable>
@@ -49,6 +52,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '100%',
     maxWidth: 324,
+    zIndex: 100,
   },
   numbersRow: {
     flexDirection: 'row',
@@ -68,6 +72,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    zIndex: 10,
   },
   numberButtonPressed: {
     backgroundColor: '#f1f5f9',
@@ -90,6 +95,7 @@ const styles = StyleSheet.create({
     minWidth: 100,
     alignItems: 'center',
     marginHorizontal: 6,
+    zIndex: 10,
   },
   actionButtonActive: {
     backgroundColor: '#3b82f6',
