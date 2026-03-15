@@ -95,6 +95,7 @@ export default function App() {
   }, [board, isComplete, mistakes, elapsedTime]);
 
   const showDifficultySelector = () => {
+    // console.log("Difficulty selector shown");
     Alert.alert(
       'New Game',
       'Select difficulty:',
@@ -246,6 +247,7 @@ const styles = StyleSheet.create({
     color: '#3b82f6',
     fontWeight: '600',
     padding: 10,
+    cursor: 'pointer',
   },
   statsRow: {
     flexDirection: 'row',

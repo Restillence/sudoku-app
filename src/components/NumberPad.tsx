@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 
 type Props = {
   onNumberPress: (num: number) => void;
@@ -15,28 +15,30 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
     <View style={styles.container}>
       <View style={styles.numbersRow}>
         {numbers.map((num) => (
-          <TouchableOpacity
+          <Pressable
             key={num}
-            style={styles.numberButton}
+            style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]}
             onPress={() => onNumberPress(num)}
-            activeOpacity={0.7}
           >
             <Text style={styles.numberText}>{num}</Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
       <View style={styles.actionsRow}>
-        <TouchableOpacity
-          style={[styles.actionButton, isNotesMode && styles.actionButtonActive]}
+        <Pressable
+          style={({ pressed }) => [styles.actionButton, isNotesMode && styles.actionButtonActive, pressed && styles.actionButtonPressed]}
           onPress={onToggleNotes}
         >
           <Text style={[styles.actionText, isNotesMode && styles.actionTextActive]}>
             ✏️ Notes
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={onErase}>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
+          onPress={onErase}
+        >
           <Text style={styles.actionText}>🗑️ Erase</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
@@ -45,6 +47,8 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
+    width: '100%',
+    maxWidth: 324,
   },
   numbersRow: {
     flexDirection: 'row',
@@ -64,6 +68,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    cursor: 'pointer', // Fix for web
+  },
+  numberButtonPressed: {
+    backgroundColor: '#f1f5f9',
   },
   numberText: {
     fontSize: 22,
@@ -83,9 +91,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f5f9',
     minWidth: 100,
     alignItems: 'center',
+    cursor: 'pointer', // Fix for web
   },
   actionButtonActive: {
     backgroundColor: '#3b82f6',
+  },
+  actionButtonPressed: {
+    backgroundColor: '#cbd5e1',
   },
   actionText: {
     fontSize: 14,

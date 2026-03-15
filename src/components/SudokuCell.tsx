@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Cell } from '../types/sudoku';
 
 type Props = {
@@ -32,17 +32,16 @@ export function SudokuCell({ cell, row, col, isSelected, isHighlighted, onPress 
   const borderBottom = (row + 1) % 3 === 0 && row < 8 ? 2 : 0.5;
 
   return (
-    <TouchableOpacity
-      style={[
+    <Pressable
+      style={({ pressed }) => [
         styles.cell,
         {
-          backgroundColor,
+          backgroundColor: pressed ? '#cbd5e1' : backgroundColor,
           borderRightWidth: borderRight,
           borderBottomWidth: borderBottom,
         },
       ]}
       onPress={() => onPress(row, col)}
-      activeOpacity={0.7}
     >
       {cell.value !== 0 ? (
         <Text style={[styles.cellText, { color: textColor }]}>
@@ -57,7 +56,7 @@ export function SudokuCell({ cell, row, col, isSelected, isHighlighted, onPress 
           ))}
         </View>
       ) : null}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -70,6 +69,7 @@ const styles = StyleSheet.create({
     borderColor: '#cbd5e1',
     borderTopWidth: 0.5,
     borderLeftWidth: 0.5,
+    cursor: 'pointer', // Fix for web
   },
   cellText: {
     fontSize: 18,
