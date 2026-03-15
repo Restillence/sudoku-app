@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   Alert,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
 import { SudokuBoard } from './src/components/SudokuBoard';
@@ -49,6 +48,7 @@ export default function App() {
   const [elapsedTime, setElapsedTime] = useState(0);
 
   const startNewGame = useCallback((diff: Difficulty) => {
+    console.log("App: Starting new game:", diff);
     const { puzzle, solution: sol } = generatePuzzle(diff);
     setBoard(initializeBoard(puzzle));
     setSolution(sol);
@@ -65,37 +65,8 @@ export default function App() {
     startNewGame('easy');
   }, [startNewGame]);
 
-  // Timer effect
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying && !isComplete) {
-      interval = setInterval(() => {
-        setElapsedTime((s) => s + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, isComplete]);
-
-  // Check for completion
-  useEffect(() => {
-    if (isComplete) return;
-    
-    const isFull = board.every((row) => row.every((cell) => cell.value !== 0));
-    const hasErrors = board.some((row) => row.some((cell) => cell.isError));
-    
-    if (isFull && !hasErrors) {
-      setIsComplete(true);
-      setIsPlaying(false);
-      Alert.alert(
-        '🎉 Congratulations!',
-        `You solved the puzzle in ${Math.floor(elapsedTime / 60)}:${(elapsedTime % 60).toString().padStart(2, '0')} with ${mistakes} mistakes!`,
-        [{ text: 'New Game', onPress: () => showDifficultySelector() }]
-      );
-    }
-  }, [board, isComplete, mistakes, elapsedTime]);
-
   const showDifficultySelector = () => {
-    // console.log("Difficulty selector shown");
+    console.log("App: New Game button pressed");
     Alert.alert(
       'New Game',
       'Select difficulty:',
@@ -108,10 +79,12 @@ export default function App() {
   };
 
   const handleCellPress = (row: number, col: number) => {
+    console.log(`App: Cell pressed: ${row}, ${col}`);
     setSelectedCell({ row, col });
   };
 
   const handleNumberPress = (num: number) => {
+    console.log(`App: Number pressed: ${num}`);
     if (!selectedCell) return;
     const { row, col } = selectedCell;
     const cell = board[row][col];
@@ -157,6 +130,7 @@ export default function App() {
   };
 
   const handleErase = () => {
+    console.log("App: Erase pressed");
     if (!selectedCell) return;
     const { row, col } = selectedCell;
     
@@ -175,32 +149,23 @@ export default function App() {
   };
 
   const toggleNotesMode = () => {
+    console.log("App: Notes mode toggled, current state:", isNotesMode);
     setIsNotesMode((prev) => !prev);
   };
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       
       <View style={styles.header}>
         <Text style={styles.title}>Sudoku</Text>
-        <TouchableOpacity onPress={showDifficultySelector}>
-          <Text style={styles.newGameButton}>New Game</Text>
+        <TouchableOpacity onPress={showDifficultySelector} style={{ backgroundColor: 'yellow', padding: 5 }}>
+          <Text style={styles.newGameButton}>New Game (Debug)</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.statsRow}>
-        <Text style={styles.statText}>
-          {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-        </Text>
-        <Text style={styles.statText}>⏱ {formatTime(elapsedTime)}</Text>
-        <Text style={styles.statText}>❌ {mistakes}</Text>
+        <Text style={styles.statText}>Difficulty: {difficulty}</Text>
       </View>
 
       <View style={styles.boardContainer}>
@@ -217,14 +182,14 @@ export default function App() {
         isNotesMode={isNotesMode}
         onToggleNotes={toggleNotesMode}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#e2e8f0', // Light grey to see container
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
@@ -236,6 +201,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 324,
     marginBottom: 16,
+    backgroundColor: 'cyan', // Debug
   },
   title: {
     fontSize: 28,
@@ -246,15 +212,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#3b82f6',
     fontWeight: '600',
-    padding: 10,
-    cursor: 'pointer',
   },
   statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
     width: '100%',
     maxWidth: 324,
     marginBottom: 20,
+    backgroundColor: 'pink', // Debug
   },
   statText: {
     fontSize: 16,
@@ -263,5 +226,6 @@ const styles = StyleSheet.create({
   },
   boardContainer: {
     alignItems: 'center',
+    backgroundColor: 'lime', // Debug
   },
 });
