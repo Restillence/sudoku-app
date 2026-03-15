@@ -32,7 +32,7 @@ export function SudokuCell({ cell, row, col, isSelected, isHighlighted, onPress 
   const borderBottom = (row + 1) % 3 === 0 && row < 8 ? 2 : 0.5;
 
   return (
-    <Pressable
+    <Pressable pointerEvents="auto" style={{ zIndex: 9999 }}
       style={({ pressed }) => [
         styles.cell,
         {

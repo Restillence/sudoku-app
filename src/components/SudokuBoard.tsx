@@ -27,7 +27,7 @@ export function SudokuBoard({ board, selectedCell, onCellPress }: Props) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} pointerEvents="box-none">
       {board.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
           {row.map((cell, colIndex) => (

@@ -15,7 +15,7 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
     <View style={styles.container} pointerEvents="box-none">
       <View style={styles.numbersRow}>
         {numbers.map((num) => (
-          <Pressable
+          <Pressable pointerEvents="auto" style={{ zIndex: 9999 }}
             key={num}
             style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]}
             onPress={() => onNumberPress(num)}
@@ -26,7 +26,7 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
         ))}
       </View>
       <View style={styles.actionsRow} pointerEvents="box-none">
-        <Pressable
+        <Pressable pointerEvents="auto" style={{ zIndex: 9999 }}
           style={({ pressed }) => [styles.actionButton, isNotesMode && styles.actionButtonActive, pressed && styles.actionButtonPressed]}
           onPress={onToggleNotes}
           pointerEvents="auto"
@@ -35,7 +35,7 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
             ✏️ Notes
           </Text>
         </Pressable>
-        <Pressable
+        <Pressable pointerEvents="auto" style={{ zIndex: 9999 }}
           style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
           onPress={onErase}
           pointerEvents="auto"
