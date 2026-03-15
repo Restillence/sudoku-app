@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 type Props = {
   onNumberPress: (num: number) => void;
@@ -54,21 +54,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 8,
   },
   numberButton: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 8,
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
+    margin: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    cursor: 'pointer', // Fix for web
   },
   numberButtonPressed: {
     backgroundColor: '#f1f5f9',
@@ -81,7 +80,6 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12,
     marginTop: 16,
   },
   actionButton: {
@@ -91,7 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f5f9',
     minWidth: 100,
     alignItems: 'center',
-    cursor: 'pointer', // Fix for web
+    marginHorizontal: 6,
   },
   actionButtonActive: {
     backgroundColor: '#3b82f6',

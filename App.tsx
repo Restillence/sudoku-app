@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 324,
     marginBottom: 16,
-    backgroundColor: 'cyan', // Debug
+    backgroundColor: .transparent., // Debug
   },
   title: {
     fontSize: 28,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 324,
     marginBottom: 20,
-    backgroundColor: 'pink', // Debug
+    backgroundColor: .transparent., // Debug
   },
   statText: {
     fontSize: 16,
@@ -226,6 +226,6 @@ const styles = StyleSheet.create({
   },
   boardContainer: {
     alignItems: 'center',
-    backgroundColor: 'lime', // Debug
+    backgroundColor: .transparent., // Debug
   },
 });
