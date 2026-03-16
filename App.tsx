@@ -4,8 +4,10 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Alert,
+  SafeAreaView,
   StatusBar,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { SudokuBoard } from './src/components/SudokuBoard';
 import { NumberPad } from './src/components/NumberPad';
@@ -15,9 +17,13 @@ import { generatePuzzle, isValidMove } from './src/utils/sudokuGenerator';
 type Grid = number[][];
 
 function createEmptyBoard(): Cell[][] {
-  return Array(9).fill(null).map(() =>
-    Array(9).fill(null).map(() => ({ value: 0, isFixed: false, notes: [], isError: false }))
-  );
+  return Array(9)
+    .fill(null)
+    .map(() =>
+      Array(9)
+        .fill(null)
+        .map(() => ({ value: 0, isFixed: false, notes: [], isError: false }))
+    );
 }
 
 function initializeBoard(puzzle: Grid): Cell[][] {
@@ -36,58 +42,63 @@ export default function App() {
   const [solution, setSolution] = useState<Grid>([]);
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
   const [isNotesMode, setIsNotesMode] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [mistakes, setMistakes] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [showDifficultyModal, setShowDifficultyModal] = useState(false);
+  const [showWinModal, setShowWinModal] = useState(false);
 
   const startNewGame = useCallback((diff: Difficulty) => {
-    console.log("App: Starting new game:", diff);
     const { puzzle, solution: sol } = generatePuzzle(diff);
     setBoard(initializeBoard(puzzle));
     setSolution(sol);
     setDifficulty(diff);
     setSelectedCell(null);
     setIsNotesMode(false);
+    setIsComplete(false);
     setMistakes(0);
+    setIsPlaying(true);
     setElapsedTime(0);
+    setShowDifficultyModal(false);
+    setShowWinModal(false);
   }, []);
 
   useEffect(() => {
     startNewGame('easy');
   }, [startNewGame]);
 
+  // Timer effect
   useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    const check = () => {
-      const isFull = board.every((row) => row.every((cell) => cell.value !== 0));
-      const hasErrors = board.some((row) => row.some((cell) => cell.isError));
-      if (isFull && !hasErrors) {
-        Alert.alert('🎉 Congratulations!', `Solved in ${Math.floor(elapsedTime / 60)}:${(elapsedTime % 60).toString().padStart(2, '0')} with ${mistakes} mistakes!`);
-      }
-    };
-    if (board.some(r => r.some(c => c.value !== 0))) check();
-  }, [board, elapsedTime, mistakes]);
+    let interval: NodeJS.Timeout;
+    if (isPlaying && !isComplete) {
+      interval = setInterval(() => {
+        setElapsedTime((s) => s + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, isComplete]);
 
-  const showDifficultySelector = () => {
-    console.log("App: New Game button pressed");
-    Alert.alert(
-      'New Game',
-      'Select difficulty:',
-      [
-        { text: 'Easy', onPress: () => startNewGame('easy') },
-        { text: 'Medium', onPress: () => startNewGame('medium') },
-        { text: 'Hard', onPress: () => startNewGame('hard') },
-      ]
-    );
-  };
+  // Check for completion
+  useEffect(() => {
+    if (isComplete) return;
+    
+    const isFull = board.every((row) => row.every((cell) => cell.value !== 0));
+    const hasErrors = board.some((row) => row.some((cell) => cell.isError));
+    
+    if (isFull && !hasErrors) {
+      setIsComplete(true);
+      setIsPlaying(false);
+      setShowWinModal(true);
+    }
+  }, [board, isComplete]);
 
   const handleCellPress = (row: number, col: number) => {
-    console.log(`App: Cell pressed: ${row}, ${col}`);
     setSelectedCell({ row, col });
   };
 
   const handleNumberPress = (num: number) => {
-    console.log(`App: Number pressed: ${num}`);
     if (!selectedCell) return;
     const { row, col } = selectedCell;
     const cell = board[row][col];
@@ -133,7 +144,6 @@ export default function App() {
   };
 
   const handleErase = () => {
-    console.log("App: Erase pressed");
     if (!selectedCell) return;
     const { row, col } = selectedCell;
     
@@ -141,13 +151,17 @@ export default function App() {
 
     setBoard((prev) => {
       const newBoard = prev.map((r) => r.map((c) => ({ ...c })));
-      newBoard[row][col] = { value: 0, isFixed: false, notes: [], isError: false };
+      newBoard[row][col] = {
+        value: 0,
+        isFixed: false,
+        notes: [],
+        isError: false,
+      };
       return newBoard;
     });
   };
 
   const toggleNotesMode = () => {
-    console.log("App: Notes mode toggled, current:", isNotesMode);
     setIsNotesMode((prev) => !prev);
   };
 
@@ -158,27 +172,45 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       
-      <View style={styles.header} pointerEvents="box-none">
+      <View style={styles.header}>
         <Text style={styles.title}>Sudoku</Text>
         <TouchableOpacity 
-          onPress={showDifficultySelector} 
           style={styles.newGameButton}
+          onPress={() => setShowDifficultyModal(true)}
           activeOpacity={0.7}
         >
           <Text style={styles.newGameButtonText}>New Game</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.statsRow} pointerEvents="box-none">
-        <Text style={styles.statText}>{difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}</Text>
-        <Text style={styles.statText}>⏱ {formatTime(elapsedTime)}</Text>
-        <Text style={styles.statText}>❌ {mistakes}</Text>
+      <View style={styles.statsCard}>
+        <View style={styles.statItem}>
+          <Text style={styles.statLabel}>Difficulty</Text>
+          <Text style={[
+            styles.statValue,
+            difficulty === 'easy' && styles.easyText,
+            difficulty === 'medium' && styles.mediumText,
+            difficulty === 'hard' && styles.hardText,
+          ]}>
+            {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+          </Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={styles.statLabel}>Time</Text>
+          <Text style={styles.statValue}>⏱ {formatTime(elapsedTime)}</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text style={styles.statLabel}>Mistakes</Text>
+          <Text style={styles.statValue}>❌ {mistakes}</Text>
+        </View>
       </View>
 
-      <View style={styles.boardContainer} pointerEvents="box-none">
+      <View style={styles.boardContainer}>
         <SudokuBoard
           board={board}
           selectedCell={selectedCell}
@@ -192,14 +224,98 @@ export default function App() {
         isNotesMode={isNotesMode}
         onToggleNotes={toggleNotesMode}
       />
-    </View>
+
+      {/* Difficulty Selection Modal */}
+      <Modal
+        visible={showDifficultyModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDifficultyModal(false)}
+      >
+        <Pressable 
+          style={styles.modalOverlay}
+          onPress={() => setShowDifficultyModal(false)}
+        >
+          <Pressable style={styles.modalContent} onPress={e => e.stopPropagation()}>
+            <Text style={styles.modalTitle}>Select Difficulty</Text>
+            
+            <TouchableOpacity
+              style={[styles.difficultyButton, styles.easyButton]}
+              onPress={() => startNewGame('easy')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.difficultyButtonText}>🟢 Easy</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={[styles.difficultyButton, styles.mediumButton]}
+              onPress={() => startNewGame('medium')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.difficultyButtonText}>⚡ Medium</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={[styles.difficultyButton, styles.hardButton]}
+              onPress={() => startNewGame('hard')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.difficultyButtonText}>🔥 Hard</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => setShowDifficultyModal(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* Win Modal */}
+      <Modal
+        visible={showWinModal}
+        transparent
+        animationType="fade"
+      >
+        <Pressable 
+          style={styles.modalOverlay}
+          onPress={() => setShowWinModal(false)}
+        >
+          <Pressable style={styles.modalContent} onPress={e => e.stopPropagation()}>
+            <Text style={styles.winTitle}>🎉 Congratulations!</Text>
+            <Text style={styles.winText}>
+              You solved the puzzle in {formatTime(elapsedTime)} with {mistakes} mistakes!
+            </Text>
+            
+            <TouchableOpacity
+              style={[styles.difficultyButton, styles.playAgainButton]}
+              onPress={() => setShowDifficultyModal(true)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.difficultyButtonText}>🎮 Play Again</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => setShowWinModal(false)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.cancelButtonText}>Close</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#f0f4f8',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
@@ -213,8 +329,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: '800',
     color: '#1e293b',
   },
   newGameButton: {
@@ -228,19 +344,122 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '600',
   },
-  statsRow: {
+  statsCard: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 12,
     width: '100%',
     maxWidth: 324,
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  statText: {
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statDivider: {
+    width: 1,
+    backgroundColor: '#e2e8f0',
+    marginHorizontal: 8,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#94a3b8',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  statValue: {
+    fontSize: 14,
+    color: '#334155',
+    fontWeight: '700',
+  },
+  easyText: {
+    color: '#22c55e',
+  },
+  mediumText: {
+    color: '#f59e0b',
+  },
+  hardText: {
+    color: '#ef4444',
+  },
+  boardContainer: {
+    alignItems: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 24,
+    width: '85%',
+    maxWidth: 320,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 20,
+  },
+  difficultyButton: {
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 10,
+    marginBottom: 12,
+    alignItems: 'center',
+  },
+  easyButton: {
+    backgroundColor: '#22c55e',
+  },
+  mediumButton: {
+    backgroundColor: '#f59e0b',
+  },
+  hardButton: {
+    backgroundColor: '#ef4444',
+  },
+  playAgainButton: {
+    backgroundColor: '#8b5cf6',
+  },
+  difficultyButtonText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+  cancelButton: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+  },
+  cancelButtonText: {
     fontSize: 16,
     color: '#64748b',
     fontWeight: '500',
   },
-  boardContainer: {
-    alignItems: 'center',
+  winTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1e293b',
+    marginBottom: 12,
+  },
+  winText: {
+    fontSize: 16,
+    color: '#64748b',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 24,
   },
 });

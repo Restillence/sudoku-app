@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 type Props = {
   onNumberPress: (num: number) => void;
@@ -12,36 +12,31 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
+    <View style={styles.container}>
       <View style={styles.numbersRow}>
         {numbers.map((num) => (
-          <Pressable pointerEvents="auto" style={{ zIndex: 9999 }}
+          <TouchableOpacity
             key={num}
-            style={({ pressed }) => [styles.numberButton, pressed && styles.numberButtonPressed]}
+            style={styles.numberButton}
             onPress={() => onNumberPress(num)}
-            pointerEvents="auto"
+            activeOpacity={0.7}
           >
             <Text style={styles.numberText}>{num}</Text>
-          </Pressable>
+          </TouchableOpacity>
         ))}
       </View>
-      <View style={styles.actionsRow} pointerEvents="box-none">
-        <Pressable pointerEvents="auto" style={{ zIndex: 9999 }}
-          style={({ pressed }) => [styles.actionButton, isNotesMode && styles.actionButtonActive, pressed && styles.actionButtonPressed]}
+      <View style={styles.actionsRow}>
+        <TouchableOpacity
+          style={[styles.actionButton, isNotesMode && styles.actionButtonActive]}
           onPress={onToggleNotes}
-          pointerEvents="auto"
         >
           <Text style={[styles.actionText, isNotesMode && styles.actionTextActive]}>
             ✏️ Notes
           </Text>
-        </Pressable>
-        <Pressable pointerEvents="auto" style={{ zIndex: 9999 }}
-          style={({ pressed }) => [styles.actionButton, pressed && styles.actionButtonPressed]}
-          onPress={onErase}
-          pointerEvents="auto"
-        >
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={onErase}>
           <Text style={styles.actionText}>🗑️ Erase</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -50,32 +45,25 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
-    width: '100%',
-    maxWidth: 324,
-    zIndex: 100,
   },
   numbersRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    gap: 8,
   },
   numberButton: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     borderRadius: 8,
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    zIndex: 10,
-  },
-  numberButtonPressed: {
-    backgroundColor: '#f1f5f9',
   },
   numberText: {
     fontSize: 22,
@@ -85,6 +73,7 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
+    gap: 12,
     marginTop: 16,
   },
   actionButton: {
@@ -92,16 +81,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     backgroundColor: '#f1f5f9',
-    minWidth: 100,
-    alignItems: 'center',
-    marginHorizontal: 6,
-    zIndex: 10,
   },
   actionButtonActive: {
     backgroundColor: '#3b82f6',
-  },
-  actionButtonPressed: {
-    backgroundColor: '#cbd5e1',
   },
   actionText: {
     fontSize: 14,
