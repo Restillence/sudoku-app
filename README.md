@@ -1,76 +1,38 @@
+# sudoku
 
-cat > /home/yvonne_otto702/.openclaw/workspace/sudoku-app/README.md << 'EOF'
-# 📱 Sudoku App
+React Native sudoku game. Works on web + android.
 
-Cross-platform Sudoku game - Web + Android
-
-## Features
-
-- 🎮 **Classic Sudoku** - 9x9 grid with standard rules
-- 🎯 **3 Difficulty Levels** - Easy, Medium, Hard
-- ✏️ **Notes Mode** - Pencil in possible numbers
-- ⏱️ **Timer** - Track your solve time
-- ❌ **Error Highlighting** - See mistakes instantly
-- 🏆 **Win Detection** - Celebration on completion
-- 🔄 **Unlimited Puzzles** - Procedurally generated with unique solutions
-
-## Run on Web
+## run it
 
 ```bash
 npm install
 npm run web
 ```
 
-Opens at http://localhost:8081
+Open http://localhost:8081
 
-## Build Android APK
+## build android
 
-### Option 1: EAS Build (Recommended)
+Easiest way is EAS:
 
-1. Install EAS CLI:
 ```bash
-npm install -g eas-cli
-```
-
-2. Login to Expo
-```bash
+npm i -g eas-cli
 eas login
-```
-
-3. Build APK
-```bash
 eas build --platform android --profile preview
 ```
 
-4. Download APK from the Expo dashboard and install on your device.
+Or if you want to build locally:
 
-### Option 2: Local Build (advanced)
-
-1. Prebuild native project
 ```bash
 npx expo prebuild --platform android
 cd android
 ./gradlew assembleRelease
 ```
 
-3. APK location: `android/app/build/outputs/apk/release/app-release.apk`
+APK ends up in `android/app/build/outputs/apk/release/`
 
-### Option 3: PWA (No app store needed)
+## how it works
 
-```bash
-npx expo export --platform web
-```
+Puzzle generator uses backtracking solver, then removes cells while ensuring unique solution. Nothing fancy.
 
-Host the `dist/` folder on any static hosting (Netlify, Vercel, GitHub Pages).
-
-Users can then "Install App" from browser on Android.
-
-## Tech Stack
-
-- React Native
-- Expo SDK 55
-- TypeScript
-
-## License
-
-MIT
+Built with Expo 55 + TypeScript.

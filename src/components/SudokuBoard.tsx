@@ -10,36 +10,26 @@ type Props = {
 };
 
 export function SudokuBoard({ board, selectedCell, onCellPress }: Props) {
-  const isHighlighted = (row: number, col: number): boolean => {
+  const highlight = (r: number, c: number): boolean => {
     if (!selectedCell) return false;
-    const { row: selRow, col: selCol } = selectedCell;
-    
-    // Same row or column
-    if (row === selRow || col === selCol) return true;
-    
-    // Same 3x3 box
-    const boxRow = Math.floor(row / 3) * 3;
-    const boxCol = Math.floor(col / 3) * 3;
-    const selBoxRow = Math.floor(selRow / 3) * 3;
-    const selBoxCol = Math.floor(selCol / 3) * 3;
-    
-    return boxRow === selBoxRow && boxCol === selBoxCol;
+    const { row: sr, col: sc } = selectedCell;
+    if (r === sr || c === sc) return true;
+    // same box
+    return Math.floor(r/3) === Math.floor(sr/3) && Math.floor(c/3) === Math.floor(sc/3);
   };
 
   return (
-    <View style={styles.container}>
-      {board.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.row}>
-          {row.map((cell, colIndex) => (
+    <View style={styles.wrap}>
+      {board.map((row, ri) => (
+        <View key={ri} style={styles.row}>
+          {row.map((cell, ci) => (
             <SudokuCell
-              key={`${rowIndex}-${colIndex}`}
+              key={`${ri}-${ci}`}
               cell={cell}
-              row={rowIndex}
-              col={colIndex}
-              isSelected={
-                selectedCell?.row === rowIndex && selectedCell?.col === colIndex
-              }
-              isHighlighted={isHighlighted(rowIndex, colIndex)}
+              row={ri}
+              col={ci}
+              isSelected={selectedCell?.row === ri && selectedCell?.col === ci}
+              isHighlighted={highlight(ri, ci)}
               onPress={onCellPress}
             />
           ))}
@@ -50,13 +40,6 @@ export function SudokuBoard({ board, selectedCell, onCellPress }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    borderWidth: 2,
-    borderColor: '#1e293b',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  row: {
-    flexDirection: 'row',
-  },
+  wrap: { borderWidth: 2, borderColor: '#111', borderRadius: 3, overflow: 'hidden' },
+  row: { flexDirection: 'row' },
 });

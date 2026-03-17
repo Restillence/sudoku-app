@@ -2,40 +2,31 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 type Props = {
-  onNumberPress: (num: number) => void;
+  onNumberPress: (n: number) => void;
   onErase: () => void;
   isNotesMode: boolean;
   onToggleNotes: () => void;
 };
 
 export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }: Props) {
-  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
   return (
-    <View style={styles.container}>
-      <View style={styles.numbersRow}>
-        {numbers.map((num) => (
-          <TouchableOpacity
-            key={num}
-            style={styles.numberButton}
-            onPress={() => onNumberPress(num)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.numberText}>{num}</Text>
+    <View style={styles.wrap}>
+      <View style={styles.nums}>
+        {[1,2,3,4,5,6,7,8,9].map(n => (
+          <TouchableOpacity key={n} style={styles.btn} onPress={() => onNumberPress(n)}>
+            <Text style={styles.btnText}>{n}</Text>
           </TouchableOpacity>
         ))}
       </View>
-      <View style={styles.actionsRow}>
-        <TouchableOpacity
-          style={[styles.actionButton, isNotesMode && styles.actionButtonActive]}
+      <View style={styles.actions}>
+        <TouchableOpacity 
+          style={[styles.actBtn, isNotesMode && styles.actBtnOn]} 
           onPress={onToggleNotes}
         >
-          <Text style={[styles.actionText, isNotesMode && styles.actionTextActive]}>
-            ✏️ Notes
-          </Text>
+          <Text style={[styles.actTxt, isNotesMode && styles.actTxtOn]}>Notes</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={onErase}>
-          <Text style={styles.actionText}>🗑️ Erase</Text>
+        <TouchableOpacity style={styles.actBtn} onPress={onErase}>
+          <Text style={styles.actTxt}>Erase</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -43,54 +34,35 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 20,
-  },
-  numbersRow: {
+  wrap: { marginTop: 16 },
+  nums: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 8,
+    gap: 6,
   },
-  numberButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    backgroundColor: '#ffffff',
+  btn: {
+    width: 44,
+    height: 44,
+    borderRadius: 6,
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
   },
-  numberText: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#1e293b',
-  },
-  actionsRow: {
+  btnText: { fontSize: 20, fontWeight: '600', color: '#111' },
+  actions: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12,
-    marginTop: 16,
+    gap: 10,
+    marginTop: 12,
   },
-  actionButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#f1f5f9',
+  actBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 6,
+    backgroundColor: '#e5e7eb',
   },
-  actionButtonActive: {
-    backgroundColor: '#3b82f6',
-  },
-  actionText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#475569',
-  },
-  actionTextActive: {
-    color: '#ffffff',
-  },
+  actBtnOn: { backgroundColor: '#2563eb' },
+  actTxt: { fontSize: 13, fontWeight: '500', color: '#444' },
+  actTxtOn: { color: '#fff' },
 });

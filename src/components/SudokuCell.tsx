@@ -12,48 +12,37 @@ type Props = {
 };
 
 export function SudokuCell({ cell, row, col, isSelected, isHighlighted, onPress }: Props) {
-  const backgroundColor = isSelected
-    ? '#3b82f6'
-    : isHighlighted
-    ? '#dbeafe'
-    : cell.isFixed
-    ? '#f1f5f9'
-    : '#ffffff';
+  const bg = isSelected 
+    ? '#2563eb' 
+    : isHighlighted 
+      ? '#dbeafe' 
+      : cell.isFixed 
+        ? '#f1f5f9' 
+        : '#fff';
 
-  const textColor = isSelected
-    ? '#ffffff'
-    : cell.isError
-    ? '#ef4444'
-    : cell.isFixed
-    ? '#1e293b'
-    : '#3b82f6';
+  const fg = isSelected 
+    ? '#fff' 
+    : cell.isError 
+      ? '#dc2626' 
+      : cell.isFixed 
+        ? '#111' 
+        : '#2563eb';
 
-  const borderRight = (col + 1) % 3 === 0 && col < 8 ? 2 : 0.5;
-  const borderBottom = (row + 1) % 3 === 0 && row < 8 ? 2 : 0.5;
+  // thick borders on 3x3 box edges
+  const bwR = (col + 1) % 3 === 0 && col < 8 ? 2 : 0.5;
+  const bwB = (row + 1) % 3 === 0 && row < 8 ? 2 : 0.5;
 
   return (
     <TouchableOpacity
-      style={[
-        styles.cell,
-        {
-          backgroundColor,
-          borderRightWidth: borderRight,
-          borderBottomWidth: borderBottom,
-        },
-      ]}
+      style={[styles.cell, { backgroundColor: bg, borderRightWidth: bwR, borderBottomWidth: bwB }]}
       onPress={() => onPress(row, col)}
-      activeOpacity={0.7}
     >
       {cell.value !== 0 ? (
-        <Text style={[styles.cellText, { color: textColor }]}>
-          {cell.value}
-        </Text>
+        <Text style={[styles.num, { color: fg }]}>{cell.value}</Text>
       ) : cell.notes.length > 0 ? (
-        <View style={styles.notesContainer}>
-          {cell.notes.map((note) => (
-            <Text key={note} style={styles.noteText}>
-              {note}
-            </Text>
+        <View style={styles.notes}>
+          {cell.notes.map(n => (
+            <Text key={n} style={styles.note}>{n}</Text>
           ))}
         </View>
       ) : null}
@@ -67,15 +56,12 @@ const styles = StyleSheet.create({
     height: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#cbd5e1',
+    borderColor: '#aaa',
     borderTopWidth: 0.5,
     borderLeftWidth: 0.5,
   },
-  cellText: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  notesContainer: {
+  num: { fontSize: 17, fontWeight: '600' },
+  notes: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     width: 32,
@@ -83,10 +69,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  noteText: {
-    fontSize: 8,
-    color: '#64748b',
-    width: 10,
-    textAlign: 'center',
-  },
+  note: { fontSize: 8, color: '#555', width: 10, textAlign: 'center' },
 });
