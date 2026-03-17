@@ -23,10 +23,10 @@ export function NumberPad({ onNumberPress, onErase, isNotesMode, onToggleNotes }
           style={[styles.actBtn, isNotesMode && styles.actBtnOn]} 
           onPress={onToggleNotes}
         >
-          <Text style={[styles.actTxt, isNotesMode && styles.actTxtOn]}>Notes</Text>
+          <Text style={[styles.actTxt, isNotesMode && styles.actTxtOn]}>✏️ Notes</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actBtn} onPress={onErase}>
-          <Text style={styles.actTxt}>Erase</Text>
+          <Text style={styles.actTxt}>🗑️ Erase</Text>
         </TouchableOpacity>
       </View>
     </View>

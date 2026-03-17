@@ -169,12 +169,12 @@ export default function App() {
         <View style={styles.divider} />
         <View style={styles.stat}>
           <Text style={styles.statLabel}>Time</Text>
-          <Text style={styles.statVal}>{fmtTime(time)}</Text>
+          <Text style={styles.statVal}>⏱️ {fmtTime(time)}</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.stat}>
           <Text style={styles.statLabel}>Errors</Text>
-          <Text style={styles.statVal}>{mistakes}</Text>
+          <Text style={styles.statVal}>❌ {mistakes}</Text>
         </View>
       </View>
 
@@ -205,7 +205,9 @@ export default function App() {
                 style={[styles.diffBtn, { backgroundColor: { easy: '#16a34a', medium: '#d97706', hard: '#dc2626' }[d] }]}
                 onPress={() => newGame(d)}
               >
-                <Text style={styles.diffBtnText}>{d}</Text>
+                <Text style={styles.diffBtnText}>
+                  {{ easy: '🟢', medium: '⚡', hard: '🔥' }[d]} {d}
+                </Text>
               </TouchableOpacity>
             ))}
             
@@ -220,16 +222,16 @@ export default function App() {
       <Modal visible={showWinModal} transparent animationType="fade">
         <Pressable style={styles.overlay}>
           <Pressable style={styles.modal}>
-            <Text style={styles.winTitle}>Solved!</Text>
+            <Text style={styles.winTitle}>🎉 Solved!</Text>
             <Text style={styles.winSub}>
-              {fmtTime(time)} / {mistakes} mistakes
+              ⏱️ {fmtTime(time)} · ❌ {mistakes} mistakes
             </Text>
             
             <TouchableOpacity 
               style={[styles.diffBtn, { backgroundColor: '#7c3aed' }]}
               onPress={() => { setShowWinModal(false); setShowDifficultyModal(true); }}
             >
-              <Text style={styles.diffBtnText}>Play again</Text>
+              <Text style={styles.diffBtnText}>🎮 Play again</Text>
             </TouchableOpacity>
             
             <TouchableOpacity onPress={() => setShowWinModal(false)}>
